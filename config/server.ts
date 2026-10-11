@@ -1,5 +1,6 @@
 function resolvePublicUrl(env: (key: string, defaultValue?: string) => string): string | undefined {
-  for (const key of ['API_URL', 'STRAPI_URL', 'DEV_API_URL', 'zeropsSubdomain'] as const) {
+  // Prefer this service's subdomain over project vault API_URL (full-stack APP_URL/API_URL split).
+  for (const key of ['zeropsSubdomain', 'API_URL', 'STRAPI_URL', 'DEV_API_URL'] as const) {
     const value = env(key, '').trim()
     if (value.startsWith('http') && !value.includes('${')) {
       return value.replace(/\/$/, '')
