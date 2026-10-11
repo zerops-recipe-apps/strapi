@@ -57,6 +57,9 @@ zerops:
         API_URL: ${zeropsSubdomain}
         APP_URL: ${APP_URL}
         DEV_APP_URL: ${DEV_APP_URL}
+        # strapi-react SPA origin for CORS when vault APP_URL does not merge (see config/middlewares.ts).
+        FRONTEND_URL: https://frontend-${zeropsSubdomainHost}.prg1.zerops.app
+        DEV_FRONTEND_URL: https://frontenddev-${zeropsSubdomainHost}.prg1.zerops.app
         IS_PROXIED: "true"
       initCommands:
         - mkdir -p public/uploads
@@ -95,6 +98,8 @@ zerops:
         APP_URL: ${DEV_APP_URL}
         DEV_APP_URL: ${DEV_APP_URL}
         DEV_API_URL: ${DEV_API_URL}
+        FRONTEND_URL: https://frontend-${zeropsSubdomainHost}.prg1.zerops.app
+        DEV_FRONTEND_URL: https://frontenddev-${zeropsSubdomainHost}.prg1.zerops.app
       ports:
         - port: 1337
           httpSupport: true

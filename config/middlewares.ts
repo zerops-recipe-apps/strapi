@@ -1,26 +1,42 @@
+function recipeStorefrontOrigins(env: (key: string, defaultValue?: string) => string): string[] {
+  const host = env('zeropsSubdomainHost', '').trim()
+  if (!host) {
+    return []
+  }
+
+  const prefixes = ['frontend', 'frontendstage', 'frontenddev'] as const
+  return prefixes.map((prefix) => `https://${prefix}-${host}.prg1.zerops.app`)
+}
+
 function corsOrigins(env: (key: string, defaultValue?: string) => string): string[] {
   const keys = [
     'APP_URL',
     'DEV_APP_URL',
     'API_URL',
     'DEV_API_URL',
+    'FRONTEND_URL',
+    'DEV_FRONTEND_URL',
     'zeropsSubdomain',
     'STRAPI_URL',
-  ] as const;
+  ] as const
 
-  const origins = new Set<string>();
+  const origins = new Set<string>()
 
   for (const key of keys) {
-    const value = env(key, '').trim();
+    const value = env(key, '').trim()
     if (value.startsWith('http') && !value.includes('${')) {
-      origins.add(value.replace(/\/$/, ''));
+      origins.add(value.replace(/\/$/, ''))
     }
   }
 
-  origins.add('http://localhost:5173');
-  origins.add('http://localhost:4173');
+  for (const origin of recipeStorefrontOrigins(env)) {
+    origins.add(origin)
+  }
 
-  return [...origins];
+  origins.add('http://localhost:5173')
+  origins.add('http://localhost:4173')
+
+  return [...origins]
 }
 
 export default ({ env }) => [
@@ -41,4 +57,4 @@ export default ({ env }) => [
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
-];
+]
