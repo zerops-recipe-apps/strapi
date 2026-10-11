@@ -20,7 +20,8 @@ zerops:
         JWT_SECRET: ${JWT_SECRET}
       buildCommands:
         - node .yarn/releases/yarn-4.9.2.cjs install
-        - node .yarn/releases/yarn-4.9.2.cjs build
+        # Full-stack imports merge vault API_URL into build; literals like ${API_URL} bake into admin assets.
+        - env -u API_URL -u APP_URL -u STRAPI_ADMIN_BACKEND_URL ADMIN_PATH=/admin STRAPI_ADMIN_BACKEND_URL=/ node .yarn/releases/yarn-4.9.2.cjs build
       deployFiles:
         - config/~
         - src/~
@@ -56,6 +57,7 @@ zerops:
         API_URL: ${zeropsSubdomain}
         APP_URL: ${APP_URL}
         DEV_APP_URL: ${DEV_APP_URL}
+        IS_PROXIED: "true"
       initCommands:
         - mkdir -p public/uploads
       ports:
