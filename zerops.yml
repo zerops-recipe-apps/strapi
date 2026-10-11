@@ -10,8 +10,9 @@ zerops:
       envVariables:
         NODE_ENV: production
         NODE_OPTIONS: --max-old-space-size=3072
-        API_URL: ${API_URL}
-        STRAPI_ADMIN_BACKEND_URL: ${API_URL}
+        # zeropsSubdomain is always set on Zerops; project vault API_URL needs envIsolation.
+        API_URL: ${zeropsSubdomain}
+        STRAPI_ADMIN_BACKEND_URL: ${zeropsSubdomain}
         APP_KEYS: ${APP_KEYS}
         API_TOKEN_SALT: ${API_TOKEN_SALT}
         ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
@@ -52,7 +53,7 @@ zerops:
         ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
         TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT}
         JWT_SECRET: ${JWT_SECRET}
-        API_URL: ${API_URL}
+        API_URL: ${zeropsSubdomain}
         APP_URL: ${APP_URL}
         DEV_APP_URL: ${DEV_APP_URL}
       initCommands:
