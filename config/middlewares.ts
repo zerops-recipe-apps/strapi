@@ -1,26 +1,26 @@
-const ZEROPS_FRONTEND_ORIGIN =
-  /^https:\/\/frontend-[a-z0-9-]+\.prg1\.zerops\.app$/;
+function corsOrigins(env: (key: string, defaultValue?: string) => string): string[] {
+  const keys = [
+    'APP_URL',
+    'DEV_APP_URL',
+    'API_URL',
+    'DEV_API_URL',
+    'zeropsSubdomain',
+    'STRAPI_URL',
+  ] as const;
 
-function resolveCorsOrigin(env: (key: string) => string | undefined) {
-  return (ctx: { request: { header: { origin?: string } } }) => {
-    const origin = ctx.request.header.origin;
-    if (!origin) {
-      return true;
+  const origins = new Set<string>();
+
+  for (const key of keys) {
+    const value = env(key, '').trim();
+    if (value.startsWith('http') && !value.includes('${')) {
+      origins.add(value.replace(/\/$/, ''));
     }
+  }
 
-    const allowed = [
-      env('APP_URL'),
-      env('DEV_APP_URL'),
-      'http://localhost:5173',
-      'http://localhost:4173',
-    ].filter((value): value is string => Boolean(value) && value.startsWith('http'));
+  origins.add('http://localhost:5173');
+  origins.add('http://localhost:4173');
 
-    if (allowed.includes(origin) || ZEROPS_FRONTEND_ORIGIN.test(origin)) {
-      return origin;
-    }
-
-    return false;
-  };
+  return [...origins];
 }
 
 export default ({ env }) => [
@@ -30,7 +30,9 @@ export default ({ env }) => [
   {
     name: 'strapi::cors',
     config: {
-      origin: resolveCorsOrigin(env),
+      // Strapi expects string | string[] — a function breaks admin asset requests (500).
+      origin: corsOrigins(env),
+      credentials: true,
     },
   },
   'strapi::poweredBy',
