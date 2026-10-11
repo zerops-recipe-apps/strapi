@@ -1,0 +1,18 @@
+# recipe-output.yaml
+recipe_created: strapi
+apps_created:
+  - https://github.com/zerops-recipe-apps/strapi
+apps_existing:
+  - https://github.com/zerops-recipe-apps/strapi-react-frontend
+strapi_fields:
+  recipe_name: Strapi
+  slug: strapi
+  recipe_source: strapi
+  categories: [cms, framework]
+  languages_frameworks: [Strapi, TypeScript, Node.js]
+  internal_type: example
+ready_for_testing: false
+notes:
+  - CMS-only recipe; full stack via strapi-react recipe + strapi-react-frontend repo.
+  - Strapi requires nodejs@24 on Zerops; verify deploy before ready_for_testing true.
+  - Site Info single type seeds on bootstrap; public GET /api/site-info.

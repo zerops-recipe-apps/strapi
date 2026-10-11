@@ -1,0 +1,97 @@
+# yaml-language-server: $schema=https://api.app-prg1.zerops.io/api/rest/public/settings/zerops-yaml-json-schema.json
+#
+# Strapi CMS at repo root. Setups: `prod` and `dev` only.
+# Strapi on Zerops uses `nodejs@24` for build and runtime.
+
+zerops:
+  - setup: prod
+    build:
+      base: nodejs@24
+      envVariables:
+        NODE_ENV: production
+        NODE_OPTIONS: --max-old-space-size=3072
+        API_URL: ${API_URL}
+        STRAPI_ADMIN_BACKEND_URL: ${API_URL}
+        APP_KEYS: ${APP_KEYS}
+        API_TOKEN_SALT: ${API_TOKEN_SALT}
+        ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+        TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT}
+        JWT_SECRET: ${JWT_SECRET}
+      buildCommands:
+        - node .yarn/releases/yarn-4.9.2.cjs install
+        - node .yarn/releases/yarn-4.9.2.cjs build
+      deployFiles:
+        - config/~
+        - src/~
+        - dist/~
+        - public/~
+        - database/~
+        - package.json
+        - yarn.lock
+        - .yarnrc.yml
+        - .yarn/releases/~
+        - favicon.png
+        - ~node_modules
+      cache:
+        - node_modules
+    deploy:
+      readinessCheck:
+        httpGet:
+          port: 1337
+          path: /_health
+    run:
+      base: nodejs@24
+      envVariables:
+        HOST: 0.0.0.0
+        PORT: "1337"
+        DATABASE_CLIENT: postgres
+        DATABASE_URL: postgresql://${db_user}:${db_password}@${db_hostname}:5432/${db_hostname}?sslmode=disable
+        APP_KEYS: ${APP_KEYS}
+        API_TOKEN_SALT: ${API_TOKEN_SALT}
+        ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+        TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT}
+        JWT_SECRET: ${JWT_SECRET}
+        API_URL: ${API_URL}
+        APP_URL: ${APP_URL}
+        DEV_APP_URL: ${DEV_APP_URL}
+      initCommands:
+        - mkdir -p public/uploads
+      ports:
+        - port: 1337
+          httpSupport: true
+      start: node node_modules/@strapi/strapi/bin/strapi.js start
+      healthCheck:
+        httpGet:
+          port: 1337
+          path: /_health
+
+  - setup: dev
+    build:
+      base: nodejs@24
+      envVariables:
+        STRAPI_URL: ${DEV_API_URL}
+      buildCommands:
+        - node .yarn/releases/yarn-4.9.2.cjs install
+      deployFiles: ./
+      cache:
+        - node_modules
+    run:
+      base: nodejs@24
+      envVariables:
+        HOST: 0.0.0.0
+        PORT: "1337"
+        DATABASE_CLIENT: postgres
+        DATABASE_URL: postgresql://${db_user}:${db_password}@${db_hostname}:5432/${db_hostname}?sslmode=disable
+        APP_KEYS: ${APP_KEYS}
+        API_TOKEN_SALT: ${API_TOKEN_SALT}
+        ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+        TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT}
+        JWT_SECRET: ${JWT_SECRET}
+        API_URL: ${DEV_API_URL}
+        APP_URL: ${DEV_APP_URL}
+        DEV_APP_URL: ${DEV_APP_URL}
+        DEV_API_URL: ${DEV_API_URL}
+      ports:
+        - port: 1337
+          httpSupport: true
+      start: zsc noop --silent
